@@ -97,6 +97,15 @@
            ("libxcomposite" ,libxcomposite) ;; FIXME belongs upstream
            ,@(package-inputs emacs)))))))
 
+(define emacs-without-xwidgets
+  (lambda (emacs)
+    (package
+      (inherit emacs)
+      (arguments
+       (substitute-keyword-arguments (package-arguments emacs)
+         ((#:configure-flags flags)
+          `(filter (lambda (flag) (not (string=? "--with-xwidgets" flag))) ,flags)))))))
+
 (define emacs-from-git
   (lambda* (emacs #:key pkg-name pkg-version pkg-revision git-repo git-commit checksum)
     (package
@@ -127,10 +136,11 @@
 
 (define-public emacs-pgtk-native-comp
   (emacs-from-git
-   (emacs-with-native-comp emacs-next-pgtk gcc-11 'full-aot)
+   (emacs-with-native-comp
+    (emacs-without-xwidgets emacs-next-pgtk) gcc-11 'full-aot)
    #:pkg-name "emacs-pgtk-native-comp"
-   #:pkg-version "28.0.90"
-   #:pkg-revision "216"
+   #:pkg-version "29.0.50"
+   #:pkg-revision "217"
    #:git-repo "https://github.com/flatwhatson/emacs.git"
-   #:git-commit "79d7eef4d1d87f920c78338e6225a8c424a1c1a6"
-   #:checksum "01fcdj874dx2fhzliy86nf0mc9hy9hl7cjnskddvn0gysbw68cf4"))
+   #:git-commit "b6adedb18e04b997e54ce2e324d8a99334eba3a6"
+   #:checksum "0qjyjazxkx6gz2x1lmn3xgcmg0sa5xkl4g18zs3nkbgjh7xrjkic"))
